@@ -1,4 +1,5 @@
-import AWS from "aws-sdk";
+const AWS = require("aws-sdk");
+
 const S3 = new AWS.S3({
     region: "us-east-1",
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -6,7 +7,7 @@ const S3 = new AWS.S3({
 });
 
 // List of bucket
-export const fetchBucketList = () => {
+const fetchBucketList = () => {
     S3.listBuckets((err, data) => {
         if (err) {
             throw new Error(err.message);
@@ -17,7 +18,7 @@ export const fetchBucketList = () => {
 }
 
 // Create a new bucket
-export const createBucket = (bucketName: any) => {
+const createBucket = (bucketName) => {
     const params = {
         Bucket: bucketName
     }
@@ -32,7 +33,7 @@ export const createBucket = (bucketName: any) => {
 }
 
 // Upload a new file into bucket
-export const uploadFile = (bucketName: any, fileName: any, content: any) => {
+const uploadFile = (bucketName, fileName, content) => {
     const params = {
         Bucket: bucketName,
         Key: fileName,
@@ -49,7 +50,7 @@ export const uploadFile = (bucketName: any, fileName: any, content: any) => {
 }
 
 // List of objects of a bucket
-export const fetchFileList = (bucketName: any) => {
+const fetchFileList = (bucketName) => {
     const params = {
         Bucket: bucketName,
     }
@@ -64,7 +65,7 @@ export const fetchFileList = (bucketName: any) => {
 }
 
 // Delete a bucket
-export const deleteBucket = (bucketName: any) => {
+const deleteBucket = (bucketName) => {
     const params = {
         Bucket: bucketName,
     }
@@ -76,4 +77,12 @@ export const deleteBucket = (bucketName: any) => {
 
         return data;
     });
+}
+
+module.exports = {
+    fetchBucketList,
+    createBucket,
+    uploadFile,
+    fetchFileList,
+    deleteBucket
 }

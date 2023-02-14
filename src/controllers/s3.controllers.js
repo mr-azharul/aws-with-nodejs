@@ -1,7 +1,7 @@
-import FS from "fs";
-import * as S3Services from "../services/s3.services";
+const FS = require("fs");
+const S3Services = require("../services/s3.services");
 
-export const getAllBucket = (req: any, res: any) => {
+const getAllBucket = (req, res) => {
     try {
         const list = S3Services.fetchBucketList();
         return res.status(200).json({ data: list });
@@ -10,7 +10,7 @@ export const getAllBucket = (req: any, res: any) => {
     }
 }
 
-export const createNewBucket = (req: any, res: any) => {
+const createNewBucket = (req, res) => {
     try {
         const bucket = S3Services.createBucket(req.body.name);
         return res.status(200).json({ data: bucket });
@@ -19,7 +19,7 @@ export const createNewBucket = (req: any, res: any) => {
     }
 }
 
-export const uploadNewFile = (req: any, res: any) => {
+const uploadNewFile = (req, res) => {
     try {
         const { bucketName, fileName } = req.body;
         const fileStream = FS.createReadStream(req.body.path);
@@ -34,7 +34,7 @@ export const uploadNewFile = (req: any, res: any) => {
     }
 }
 
-export const getAllFile = (req: any, res: any) => {
+const getAllFile = (req, res) => {
     try {
         const files = S3Services.fetchFileList(req.body.name);
         return res.status(200).json({ data: files });
@@ -43,11 +43,19 @@ export const getAllFile = (req: any, res: any) => {
     }
 }
 
-export const deleteBucket = (req: any, res: any) => {
+const deleteBucket = (req, res) => {
     try {
         const bucket = S3Services.deleteBucket(req.body.name);
         return res.status(200).json({ data: bucket });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
+}
+
+module.exports = {
+    getAllBucket,
+    createNewBucket,
+    uploadNewFile,
+    getAllFile,
+    deleteBucket
 }
