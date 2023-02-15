@@ -1,61 +1,72 @@
-const FS = require("fs");
-const S3Services = require("../services/s3.services");
+import { createReadStream } from "fs";
+import S3Services from "../services/s3.services.js";
 
-const getAllBucket = (req, res) => {
+const getAllBucket = async (req, res) => {
     try {
-        const list = S3Services.fetchBucketList();
+        const list = await S3Services.fetchBucketList();
         return res.status(200).json({ data: list });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
 }
 
-const createNewBucket = (req, res) => {
+const createNewBucket = async (req, res) => {
     try {
-        const bucket = S3Services.createBucket(req.body.name);
+        const bucket = await S3Services.createBucket(req.body.name);
         return res.status(200).json({ data: bucket });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
 }
 
-const uploadNewFile = (req, res) => {
+const uploadNewFile = async (req, res) => {
     try {
         const { bucketName, fileName } = req.body;
-        const fileStream = FS.createReadStream(req.body.path);
-        fileStream.on('error', function (err) {
+        const fileStream = createReadStream(req.body.path);
+        fileStream.on('error', (err) => {
             throw new Error(err.message);
         });
 
-        const upload = S3Services.uploadFile(bucketName, fileName, fileStream);
+        const upload = await S3Services.uploadFile(bucketName, fileName, fileStream);
         return res.status(200).json({ data: upload });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
 }
 
-const getAllFile = (req, res) => {
+const getSingleFile = async (req, res) => {
     try {
-        const files = S3Services.fetchFileList(req.body.name);
+        const { bucketName, fileName } = req.body;
+        const files = await S3Services.fetchSingleFile(bucketName, fileName);
         return res.status(200).json({ data: files });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
 }
 
-const deleteBucket = (req, res) => {
+const getAllFile = async (req, res) => {
     try {
-        const bucket = S3Services.deleteBucket(req.body.name);
+        const files = await S3Services.fetchFileList(req.body.name);
+        return res.status(200).json({ data: files });
+    } catch (err) {
+        return res.status(500).json({ data: err });
+    }
+}
+
+const deleteBucket = async (req, res) => {
+    try {
+        const bucket = await S3Services.deleteBucket(req.body.name);
         return res.status(200).json({ data: bucket });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
 }
 
-module.exports = {
+export default {
     getAllBucket,
     createNewBucket,
     uploadNewFile,
+    getSingleFile,
     getAllFile,
     deleteBucket
 }

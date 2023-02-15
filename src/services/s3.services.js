@@ -1,88 +1,89 @@
-const AWS = require("aws-sdk");
-
-const S3 = new AWS.S3({
-    region: "us-east-1",
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_ACCESS_KEY_SECRET
-});
+import pkg from "@aws-sdk/client-s3";
+import { s3Client } from "./../libs/s3client.js";
+const { ListBucketsCommand, CreateBucketCommand, PutObjectCommand, GetObjectCommand, ListObjectsCommand, DeleteBucketCommand } = pkg;
 
 // List of bucket
-const fetchBucketList = () => {
-    S3.listBuckets((err, data) => {
-        if (err) {
-            throw new Error(err.message);
-        }
-
-        return data.Buckets;
-    });
+const fetchBucketList = async () => {
+    try {
+        return await s3Client.send(new ListBucketsCommand({}));
+    } catch (err) {
+        throw new Error(err.message);
+    }
 }
 
 // Create a new bucket
-const createBucket = (bucketName) => {
-    const params = {
-        Bucket: bucketName
-    }
-
-    S3.createBucket(params, (err, data) => {
-        if (err) {
-            throw new Error(err.message);
+const createBucket = async (bucketName) => {
+    try {
+        const params = {
+            Bucket: bucketName
         }
 
-        return data.Location;
-    });
+        return await s3Client.send(new CreateBucketCommand(params));
+    } catch (err) {
+        throw new Error(err.message);
+    }
 }
 
 // Upload a new file into bucket
-const uploadFile = (bucketName, fileName, content) => {
-    const params = {
-        Bucket: bucketName,
-        Key: fileName,
-        Body: content
-    }
-
-    S3.upload(params, {}, (err, data) => {
-        if (err) {
-            throw new Error(err.message);
+const uploadFile = async (bucketName, fileName, content) => {
+    try {
+        const params = {
+            Bucket: bucketName,
+            Key: fileName,
+            Body: content
         }
 
-        return data.Location;
-    });
+        return await s3Client.send(new PutObjectCommand(params));
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+// Fetch single object of a bucket
+const fetchSingleFile = async (bucketName, fileName) => {
+    try {
+        const params = {
+            Bucket: bucketName,
+            Key: fileName,
+        }
+
+        return await s3Client.send(new GetObjectCommand(params));
+    } catch (err) {
+        throw new Error(err.message);
+    }
 }
 
 // List of objects of a bucket
-const fetchFileList = (bucketName) => {
-    const params = {
-        Bucket: bucketName,
-    }
-
-    S3.listObjects(params, (err, data) => {
-        if (err) {
-            throw new Error(err.message);
+const fetchFileList = async (bucketName) => {
+    try {
+        const params = {
+            Bucket: bucketName,
         }
 
-        return data;
-    });
+        return await s3Client.send(new ListObjectsCommand(params));
+    } catch (err) {
+        throw new Error(err.message);
+    }
 }
 
 // Delete a bucket
-const deleteBucket = (bucketName) => {
-    const params = {
-        Bucket: bucketName,
-    }
-
-    S3.deleteBucket(params, (err, data) => {
-        if (err) {
-            throw new Error(err.message);
+const deleteBucket = async (bucketName) => {
+    try {
+        const params = {
+            Bucket: bucketName,
         }
 
-        return data;
-    });
+        return await s3Client.send(new DeleteBucketCommand(params));
+    } catch (err) {
+        throw new Error(err.message);
+    }
 }
 
-module.exports = {
+export default {
     fetchBucketList,
     createBucket,
     uploadFile,
+    fetchSingleFile,
     fetchFileList,
     deleteBucket
 }
