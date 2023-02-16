@@ -1,6 +1,5 @@
-import pkg from "@aws-sdk/client-s3";
+import { ListBucketsCommand, CreateBucketCommand, PutObjectCommand, GetObjectCommand, ListObjectsCommand, DeleteBucketCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "./../libs/s3client.js";
-const { ListBucketsCommand, CreateBucketCommand, PutObjectCommand, GetObjectCommand, ListObjectsCommand, DeleteBucketCommand } = pkg;
 
 // List of bucket
 const fetchBucketList = async () => {
