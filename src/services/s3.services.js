@@ -19,6 +19,7 @@ const createBucket = async (bucketName) => {
 
         return await s3Client.send(new CreateBucketCommand(params));
     } catch (err) {
+        console.log(err);
         throw new Error(err.message);
     }
 }
@@ -46,7 +47,8 @@ const fetchSingleFile = async (bucketName, fileName) => {
             Key: fileName,
         }
 
-        return await s3Client.send(new GetObjectCommand(params));
+        const file = await s3Client.send(new GetObjectCommand(params));
+        return file.Body;
     } catch (err) {
         throw new Error(err.message);
     }

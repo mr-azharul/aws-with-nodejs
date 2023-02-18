@@ -1,4 +1,4 @@
-import { createReadStream } from "fs";
+import { createReadStream, readFileSync } from "fs";
 import S3Services from "../services/s3.services.js";
 
 const getAllBucket = async (req, res) => {
@@ -38,7 +38,7 @@ const getSingleFile = async (req, res) => {
     try {
         const { bucketName, fileName } = req.body;
         const files = await S3Services.fetchSingleFile(bucketName, fileName);
-        return res.status(200).json({ data: files });
+        return res.status(200).send({ data: files });
     } catch (err) {
         return res.status(500).json({ data: err });
     }
